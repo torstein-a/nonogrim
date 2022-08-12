@@ -1,0 +1,78 @@
+:root {
+    --border-color: #999;
+    --grid-border-color: #000;
+    --th-bg-color: #eee;
+}
+
+body * {
+    box-sizing: border-box;
+}
+
+
+.board {
+    margin: auto;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.board .cell {
+    border: thin solid var(--border-color);
+    border-radius: 2px;
+}
+
+.board .cell.checked.Y {
+    background: var(--grid-border-color);
+}
+.board .cell.checked.N {
+    background: var(--border-color);
+}
+.board .cell.err:after {
+    display: block;
+    content: 'x';
+    color: red;
+}
+
+.board th{
+    background: var(--th-bg-color);
+    min-height: 10px;
+    min-width: 10px;
+}
+
+.board tr:first-child td{
+    background: none;
+}
+.board tr:not(:first-child) th{
+    border-bottom: thin dashed var(--border-color);
+}
+
+.board tr:not(:first-child) th span{
+    margin: 0.25em;
+}
+
+
+.board tr:first-child th {
+    border-left: thin dashed var(--border-color);
+}
+.board tr:first-child th span {
+    display: block;
+}
+
+
+.board.two-grid .cell:nth-child(2n+1):not(:last-child) {
+    border-right: 2px solid var(--grid-border-color);
+}
+.board.two-grid tr:nth-child(2n+1):not(:last-child) .cell {
+    border-bottom: 2px solid var(--grid-border-color);
+}
+.board.three-grid .cell:nth-child(3n+1):not(:last-child) {
+    border-right: 2px solid var(--grid-border-color);
+}
+.board.three-grid tr:nth-child(3n+1):not(:last-child) .cell {
+    border-bottom: 2px solid var(--grid-border-color);
+}
+.board.five-grid .cell:nth-child(5n+1):not(:last-child) {
+    border-right: 2px solid var(--grid-border-color);
+}
+.board.five-grid tr:nth-child(5n+1):not(:last-child) .cell {
+    border-bottom: 2px solid var(--grid-border-color);
+}

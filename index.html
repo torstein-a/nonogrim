@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Nonogrim</title>
+  <link href="styles.css" type="text/css" rel="stylesheet">
+  <script src="scripts/main.js" type="module"></script>
+</head>
+<body>
+<form action="" method="get">
+  <label>Board size: <select name="size">
+    <option value="5">5x5 (easiest)</option>
+    <option value="10">10x10</option>
+    <option value="15">15x15</option>
+  </select></label>
+  <input type="submit">
+</form>
+<div class="container">
+  <aside class="open">
+<!--    <button >-</button>-->
+<!--    <button>+</button>-->
+    <div class="stats">
+      Total: <span class="toFind">0</span>
+      Errors: <span class="errorCounter">0</span>
+      Correct: <span class="correctCounter">0</span>
+    </div>
+    <div class="ui-options">
+      <label>Grid size
+        <select name="grid-size">
+          <option value="2">2 grid</option>
+          <option value="3">3 grid</option>
+          <option value="5">5 grid</option>
+        </select>
+      </label>
+    </div>
+  </aside>
+  <main>
+    <table class="board five-grid"></table>
+  </main>
+
+</div>
+
+</body>
+</html>
