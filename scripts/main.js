@@ -1,4 +1,4 @@
-import {$, fillArray, loop, newElement, SearchParams} from "./utils.js"
+import {$, fillArray, loop, newElement, SearchParams, stepper} from "./utils.js"
 
 let boardOptions = {
   "size": 10,
@@ -78,7 +78,24 @@ $('select[name="grid-size"]')?.addEventListener('change', (e) => {
 })
 
 
-const initBoard = (options) => fillArray(options.size * options.size, () => ({...baseCell, state: Math.random() > 0.5}))
+const initBoard = (options) => {
+  let b = fillArray(options.size * options.size, () => ({...baseCell}))
+  for (var i = 0; i < options.size; i++) {
+    let d = 0
+    b.slice(i * options.size, i * options.size + options.size).forEach(c => {
+      d = stepper(d, -4, 1)
+      c.state += d>0
+    })
+  }
+  for (var i = 0; i < options.size; i++) {
+    let d = 0
+    b.filter((c, j) => (j - i) % options.size === 0).forEach(c => {
+      d = stepper(d, -4, 1)
+      c.state = c.state || d > 0
+    })
+  }
+  return b
+}
 
 const drawBoard = (board, options) => {
   const boardContainer = $('table.board')

@@ -33,4 +33,10 @@ export const newElement = ({type, className, style, content, dataAttr}) => {
 
 export const loop = (n, cb) => {while (n--) cb(n)}
 
+export const stepper = (previous, lower, upper) => {
+  let d = Math.round(3*Math.random() - 3*Math.random())
+  if (d < lower) d = lower
+  if (d > upper) d = upper
+  return d
+}
 
