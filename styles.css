@@ -1,11 +1,49 @@
-:root {
+:root,
+.theme-default {
+    --main-bg-color: #fff;
+    --text-color: #000;
     --border-color: #999;
     --grid-border-color: #000;
+    --cell-bg-color: #000;
     --th-bg-color: #eee;
+    --error-color: #f00;
+}
+
+.theme-high-contrast {
+    --main-bg-color: #fff;
+    --text-color: #000;
+    --border-color: #9900ff;
+    --grid-border-color: #000;
+    --cell-bg-color: #0048ff;
+    --th-bg-color: #01c504;
+    --error-color: #f00;
+}
+.theme-high-contrast-inverse {
+    --main-bg-color: #000;
+    --text-color: #ffea00;
+    --border-color: #e600ff;
+    --grid-border-color: #ffea00;
+    --cell-bg-color: #e600ff;
+    --th-bg-color: #007209;
+    --error-color: #f00;
+}
+.theme-warlock {
+    --main-bg-color: #312c3a;
+    --text-color: #cccccd;
+    --border-color: #433b4d;
+    --grid-border-color: #774c7e;
+    --cell-bg-color: #ec84ed;
+    --th-bg-color: #473b58;
+    --error-color: #dd4647;
 }
 
 body * {
     box-sizing: border-box;
+}
+
+body {
+    color: var(--text-color);
+    background: var(--main-bg-color);
 }
 
 
@@ -21,7 +59,7 @@ body * {
 }
 
 .board .cell.checked.Y {
-    background: var(--grid-border-color);
+    background: var(--cell-bg-color);
 }
 .board .cell.checked.N {
     background: var(--border-color);
@@ -29,7 +67,7 @@ body * {
 .board .cell.err:after {
     display: block;
     content: 'x';
-    color: red;
+    color: var(--error-color);
 }
 
 .board th{

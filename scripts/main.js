@@ -77,6 +77,25 @@ $('select[name="grid-size"]')?.addEventListener('change', (e) => {
   $('table.board')?.classList.add(add)
 })
 
+$('select[name="theme"]')?.addEventListener('change', (e)=>{
+  let className = 'theme-';
+  switch (parseInt(e.target.value)) {
+    case 3:
+      className += 'warlock'
+      break;
+    case 2:
+      className += 'high-contrast-inverse'
+      break;
+      case 1:
+      className += 'high-contrast'
+      break;
+    case 0:
+    default:
+      className += 'default'
+      break;
+  }
+  $('body').className = className
+})
 
 const initBoard = (options) => {
   let b = fillArray(options.size * options.size, () => ({...baseCell}))
