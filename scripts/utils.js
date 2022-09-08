@@ -12,8 +12,10 @@ export const SearchParams = (pathString) => {
 
 export const $ = (a, b) => {
   let res = undefined
-  if (typeof a == 'string') res = document.querySelectorAll(a)
-  if (Object.hasOwn(a, 'parentElement') && typeof b == 'string') res = a.querySelectorAll(`:scope ${b}`)
+  if (typeof a === 'string') res = document.querySelectorAll(a)
+  if (a && a instanceof Element && typeof b == 'string') {
+    res = a.querySelectorAll(`:scope ${b}`)
+  }
   if (res && res.length === 1) return res[0]
   return res
 }

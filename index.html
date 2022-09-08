@@ -7,24 +7,25 @@
   <script src="scripts/main.js" type="module"></script>
 </head>
 <body>
-<form action="" method="get">
-  <label>Board size: <select name="size">
-    <option value="5">5x5 (easiest)</option>
-    <option value="10">10x10</option>
-    <option value="15">15x15</option>
-  </select></label>
-  <input type="submit">
-</form>
-<div class="container">
-  <aside class="open">
-<!--    <button >-</button>-->
-<!--    <button>+</button>-->
-    <div class="stats">
-      Total: <span class="toFind">0</span>
-      Errors: <span class="errorCounter">0</span>
-      Correct: <span class="correctCounter">0</span>
-    </div>
-    <div class="ui-options">
+<section class="game-settings dialog-container">
+  <header><button>Create new game</button></header>
+  <dialog>
+    <form method="dialog">
+      <label>Board size: <select name="size">
+        <option value="5">5x5 (easiest)</option>
+        <option value="10">10x10</option>
+        <option value="15">15x15</option>
+      </select></label>
+      <button value="create">Create</button>
+      <button value="cancel">Cancel</button>
+    </form>
+  </dialog>
+</section>
+<section class="accessibility dialog-container">
+  <header><button>Accessibility</button></header>
+
+  <dialog>
+    <form method="dialog">
       <label>Grid size
         <select name="grid-size">
           <option value="2">2 grid</option>
@@ -40,13 +41,20 @@
           <option value="3">Warlock</option>
         </select>
       </label>
-    </div>
-  </aside>
-  <main>
-    <table class="board five-grid"></table>
-  </main>
+      <button value="default">Close options</button>
+    </form>
+  </dialog>
+</section>
 
-</div>
+<section class="stats">
+  <header>Statistics</header>
+  Total: <span class="toFind">0</span>
+  Errors: <span class="errorCounter">0</span>
+  Correct: <span class="correctCounter">0</span>
+</section>
 
+<main>
+  <table class="board five-grid"></table>
+</main>
 </body>
 </html>
