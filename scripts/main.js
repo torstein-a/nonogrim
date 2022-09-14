@@ -108,7 +108,9 @@ const createBoard = (options) => {
   gameBoard = initBoard(options)
   target = gameBoard.filter(c => c.state).length
   correct = 0
+  wrong = 0
   $('.stats .toFind').innerText = target
+  $('.stats .errorCounter').innerText = wrong
 
   console.log(gameBoard)
 
