@@ -61,9 +61,50 @@ body {
     background: var(--main-bg-color);
 }
 
+section {
+    margin-bottom: 1rem;
+}
+
+dialog::backdrop {
+    background-color: #00000099;
+}
+
 
 dialog {
-    border-radius: 1em;
+    border-radius: 1rem;
+    width: 80%;
+    padding: 2rem;
+    border: thick double var(--border-color);
+    background: var(--main-bg-color);
+    color: var(--main-text-color);
+    text-align: center;
+}
+
+dialog form {
+    display: block;
+    margin: auto;
+    width: fit-content;
+    text-align: left;
+}
+
+dialog form .buttons {
+    text-align: center;
+    padding-top: 2rem;
+}
+
+button {
+    margin: auto;
+    border: thin solid var(--border-color);
+    background: var(--th-bg-color);
+    color: var(--th-text-color);
+    border-radius: 1rem;
+    padding: 0.5rem 1rem;
+}
+
+label {
+    display: block;
+    width: fit-content;
+    margin-bottom: 1rem;
 }
 
 .board {
@@ -89,6 +130,7 @@ dialog {
     display: block;
     content: '×';
     color: var(--error-color);
+    text-align: center;
 }
 
 .board th {

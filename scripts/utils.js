@@ -16,6 +16,7 @@ export const $ = (a, b) => {
   if (a && a instanceof Element && typeof b == 'string') {
     res = a.querySelectorAll(`:scope ${b}`)
   }
+  if (res && res.length < 1) return null
   if (res && res.length === 1) return res[0]
   return res
 }

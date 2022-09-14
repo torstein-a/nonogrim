@@ -16,7 +16,6 @@ let a11yOptions = a11yOptionsString && JSON.parse(a11yOptionsString) || {
 }
 localStorage.setItem('a11y-options', JSON.stringify(a11yOptions))
 
-
 const baseCell = {guess: 0, state: false}
 const baseHintGroup = {value: 0, covered: false}
 
@@ -24,18 +23,19 @@ const baseHintGroup = {value: 0, covered: false}
 $('.dialog-container').forEach(el => {
   const dialog = $(el, 'dialog')
   const button = $(el, 'header button')
-  button.addEventListener('click', () => {
+  button && button.addEventListener('click', () => {
     if (!dialog.open) dialog.showModal()
   })
 })
 
-$('.dialog-container.game-settings button[value="create"]').addEventListener('click', ev => {
-  boardOptions.size = parseInt($('select[name="size"]').value)
-  localStorage.setItem('board-options', JSON.stringify(boardOptions))
-  createBoard(boardOptions)
-  drawBoard(gameBoard, boardOptions)
+$('.dialog-container.game-settings button[value="create"], .dialog-container.score-card button[value="create"]').forEach((el) => {
+  el.addEventListener('click', ev => {
+    boardOptions.size = parseInt($('select[name="size"]').value)
+    localStorage.setItem('board-options', JSON.stringify(boardOptions))
+    createBoard(boardOptions)
+    drawBoard(gameBoard, boardOptions)
+  })
 })
-
 
 let gameBoard = []
 let target = 99, correct = 0, wrong = 0
@@ -63,7 +63,11 @@ $('table.board')?.addEventListener('click', (e) => {
     }
     gameBoard = resolveRowCol(index, gameBoard, boardOptions)
     updateCheckedCells(gameBoard)
-    if (correct >= target) alert("HUZZAH!")
+    if (correct >= target) {
+      $('.score-card .errorCounter').innerText = wrong
+      $('.score-card .toFind').innerText = correct
+      $('.score-card dialog').showModal()
+    }
   }
 })
 
