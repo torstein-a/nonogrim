@@ -1,20 +1,18 @@
-import {$, fillArray, newElement, stepper} from "./utils.js"
+import {$, fillArray, newElement, recall, stepper, store} from "./utils.js"
 
-let boardOptionsString = localStorage.getItem('board-options') || ''
-let boardOptions = boardOptionsString && JSON.parse(boardOptionsString) || {
+let boardOptions = recall('board-options', {
   "size": 10,
   "cellSize": 25
-}
-localStorage.setItem('board-options', JSON.stringify(boardOptions))
+})
+store('board-options', boardOptions)
 
-let a11yOptionsString = localStorage.getItem('a11y-options') || ''
-let a11yOptions = a11yOptionsString && JSON.parse(a11yOptionsString) || {
+let a11yOptions = recall('a11y-options', {
   'gridSize': 5,
   'theme': 0,
   'continousClick': true,
   'confirmClick': false,
-}
-localStorage.setItem('a11y-options', JSON.stringify(a11yOptions))
+})
+store('a11y-options', a11yOptions)
 
 const baseCell = {guess: 0, state: false}
 const baseHintGroup = {value: 0, covered: false}
@@ -31,17 +29,17 @@ $('.dialog-container').forEach(el => {
 $('.dialog-container.game-settings button[value="create"], .dialog-container.score-card button[value="create"]').forEach((el) => {
   el.addEventListener('click', ev => {
     boardOptions.size = parseInt($('select[name="size"]').value)
-    localStorage.setItem('board-options', JSON.stringify(boardOptions))
+    store('board-options', boardOptions)
     createBoard(boardOptions)
     drawBoard(gameBoard, boardOptions)
   })
 })
 
-let gameBoard = []
+let gameBoard = recall('board', [])
 let target = 99, correct = 0, wrong = 0
 
 window.addEventListener('load', () => {
-  createBoard(boardOptions)
+  if (!gameBoard.length) createBoard(boardOptions)
   drawBoard(gameBoard, boardOptions)
   // Apply a11y options
   toggleGrid(a11yOptions.gridSize)
@@ -68,13 +66,14 @@ $('table.board')?.addEventListener('click', (e) => {
       $('.score-card .toFind').innerText = correct
       $('.score-card dialog').showModal()
     }
+    store('board', gameBoard)
   }
 })
 
 $('select[name="grid-size"]')?.addEventListener('change', (e) => {
   const gridSize = parseInt(e.target.value)
   a11yOptions.gridSize = gridSize
-  localStorage.setItem('a11y-options', JSON.stringify(a11yOptions))
+  store('a11y-options', a11yOptions)
   toggleGrid(gridSize)
 })
 
@@ -82,11 +81,12 @@ $('select[name="theme"]')?.addEventListener('change', (e) => {
 
   const theme = parseInt(e.target.value)
   a11yOptions.theme = theme
-  localStorage.setItem('a11y-options', JSON.stringify(a11yOptions))
+  store('a11y-options', a11yOptions)
   toggleTheme(theme)
 
 })
 
+// TODO clean up creatBoard, use initBoard as default value for gameBoard
 const createBoard = (options) => {
   $('select[name=size]').value = options.size
   switch (options.size) {
@@ -106,18 +106,15 @@ const createBoard = (options) => {
   }
 
   gameBoard = initBoard(options)
+  store('board', gameBoard)
   target = gameBoard.filter(c => c.state).length
   correct = 0
   wrong = 0
   $('.stats .toFind').innerText = target
   $('.stats .errorCounter').innerText = wrong
-
-  console.log(gameBoard)
-
 }
 
 const initBoard = (options) => {
-  console.log('op', options)
   let b = fillArray(options.size * options.size, () => ({...baseCell}))
   for (var i = 0; i < options.size; i++) {
     let d = 0
@@ -133,7 +130,6 @@ const initBoard = (options) => {
       c.state = c.state || d > 0
     })
   }
-  console.log('ib', b)
   return b
 }
 
@@ -169,7 +165,9 @@ const drawBoard = (board, options) => {
       let cell = board[c]
       let classes = ['cell']
       if (cell.guess !== 0) {
-        classes.push(cell.state ? 'x' : 'o')
+        classes = [...classes, ...[
+          'checked', cell.state ? 'Y' : 'N',
+        ]]
         if ((cell.state && cell.guess != 1) || (!cell.state && cell.guess == 1)) classes.push('err')
       }
 

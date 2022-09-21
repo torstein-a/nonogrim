@@ -43,3 +43,17 @@ export const stepper = (previous, lower, upper) => {
   return d
 }
 
+export const store = (key, value) => {
+  window.localStorage.setItem(key, JSON.stringify(value))
+}
+export const recall = (key, defaultValue) => {
+  let s = window.localStorage.getItem(key)
+  if (s) {
+    try {
+      return JSON.parse(s)
+    } catch (e) {
+      console.error('parse failed!', e)
+    }
+  }
+  return defaultValue !== undefined ? defaultValue : undefined
+}
