@@ -10,7 +10,7 @@
     --th-solved-bg-color: #eee;
     --th-solved-text-color: #888;
     --error-color: #f00;
-
+    --cell-marker: #00f;
 }
 
 .theme-high-contrast {
@@ -24,6 +24,7 @@
     --th-solved-bg-color: #f2ca19;
     --th-solved-text-color: #0057e9;
     --error-color: #f00;
+    --cell-marker: #080;
 }
 
 .theme-high-contrast-inverse {
@@ -37,6 +38,7 @@
     --th-solved-bg-color: #87e911;
     --th-solved-text-color: #0057e9;
     --error-color: #000;
+    --cell-marker: #fff;
 }
 
 .theme-warlock {
@@ -50,6 +52,7 @@
     --th-solved-bg-color: #6e4652;
     --th-solved-text-color: #ed7e85;
     --error-color: #49e1dc;
+    --cell-marker: #44dc6a;
 }
 
 body * {
@@ -124,6 +127,10 @@ label {
 
 .board .cell.checked.N {
     background: var(--empty-cell-bg-color);
+}
+
+.board.highlight-marker .cell:hover {
+    outline: thick dashed var(--cell-marker);
 }
 
 .board .cell.err:after {

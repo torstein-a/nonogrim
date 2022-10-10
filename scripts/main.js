@@ -1,5 +1,7 @@
 import {$, fillArray, newElement, recall, stepper, store} from "./utils.js"
 
+let continuousClickingActive = false
+
 let boardOptions = recall('board-options', {
   "size": 10,
   "cellSize": 25
@@ -12,7 +14,16 @@ let a11yOptions = recall('a11y-options', {
   'continousClick': true,
   'confirmClick': false,
 })
+if (a11yOptions.continousClick) {
+  $('input[name="auto-click"]')?.setAttribute('checked', 'checked')
+}
 store('a11y-options', a11yOptions)
+
+// set menus
+$(`select[name="size"] option[value="${boardOptions.size}"]`)?.setAttribute('selected', 'selected')
+$(`select[name="grid-size"] option[value="${a11yOptions.gridSize}"]`)?.setAttribute('selected', 'selected')
+$(`select[name="theme"] option[value="${a11yOptions.theme}"]`)?.setAttribute('selected', 'selected')
+a11yOptions.continousClick && $(`checkbox[name="auto-click"]`)?.setAttribute('checked', 'checked')
 
 const baseCell = {guess: 0, state: false}
 const baseHintGroup = {value: 0, covered: false}
@@ -35,20 +46,81 @@ $('.dialog-container.game-settings button[value="create"], .dialog-container.sco
   })
 })
 
+const calcStats = (board) => {
+  return {
+    goal: board.filter(c => c.state).length,
+    correct: board.filter(c => c.state && c.guess).length,
+    wrong: board.filter(c => !c.state && c.guess).length,
+  }
+}
+const updateStats = ({badGuesses = 0, correctGuesses = 0, goal = 0}) => {
+  badGuesses && ($('.stats .errorCounter').innerText = badGuesses)
+  correctGuesses && ($('.stats .correctCounter').innerText = correctGuesses)
+  goal && ($('.stats .toFind').innerText = goal)
+}
+
 let gameBoard = recall('board', [])
-let target = 99, correct = 0, wrong = 0
+
+let {goal, correct, wrong} = calcStats(gameBoard)
+updateStats({badGuesses: wrong, correctGuesses: correct, goal: goal})
 
 window.addEventListener('load', () => {
   if (!gameBoard.length) createBoard(boardOptions)
   drawBoard(gameBoard, boardOptions)
   // Apply a11y options
-  toggleGrid(a11yOptions.gridSize)
-  toggleTheme(a11yOptions.theme)
+  swapGrid(a11yOptions.gridSize)
+  swapTheme(a11yOptions.theme)
 })
 
 
 $('table.board')?.addEventListener('click', (e) => {
   let index = e.target?.dataset.index
+  if (index) {
+    clickCellAtIndex(index)
+    if (a11yOptions.continousClick) toggleContinuousClicking()
+  } else {
+    disableContinuousClicking()
+  }
+})
+
+$('table.board')?.addEventListener('mousemove', (e) => {
+
+    let index = e.target?.dataset.index
+  //console.log('mousemovde', index, continuousClickingActive)
+    if (index && continuousClickingActive) {
+      clickCellAtIndex(index)
+    } else {
+      disableContinuousClicking()
+    }
+})
+
+
+
+// $('main')?.addEventListener('mouseover', (e)=>console.log('mouse', continuousClickingActive, e.target))
+
+
+$('select[name="grid-size"]')?.addEventListener('change', (e) => {
+  const gridSize = parseInt(e.target.value)
+  a11yOptions.gridSize = gridSize
+  store('a11y-options', a11yOptions)
+  swapGrid(gridSize)
+})
+
+$('select[name="theme"]')?.addEventListener('change', (e) => {
+  const theme = parseInt(e.target.value)
+  a11yOptions.theme = theme
+  store('a11y-options', a11yOptions)
+  swapTheme(theme)
+
+})
+
+$('input[name="auto-click"]')?.addEventListener('change', (e) => {
+  a11yOptions.continousClick = !!e.target.checked
+  store('a11y-options', a11yOptions)
+})
+
+const clickCellAtIndex = (index) => {
+ // console.log('clickcell', index)
   if (index >= 0 && gameBoard[index]?.guess === 0) {
     let cellEl = $(`[data-index="${index}"]`)
     gameBoard[index].guess = 1
@@ -56,37 +128,23 @@ $('table.board')?.addEventListener('click', (e) => {
     if (!gameBoard[index].state) {
       updateStats({badGuesses: ++wrong})
       cellEl.classList.add('err')
+      disableContinuousClicking()
     } else {
       updateStats({correctGuesses: ++correct})
     }
     gameBoard = resolveRowCol(index, gameBoard, boardOptions)
     updateCheckedCells(gameBoard)
-    if (correct >= target) {
+    if (correct >= goal) {
       $('.score-card .errorCounter').innerText = wrong
       $('.score-card .toFind').innerText = correct
       $('.score-card dialog').showModal()
     }
     store('board', gameBoard)
   }
-})
+}
 
-$('select[name="grid-size"]')?.addEventListener('change', (e) => {
-  const gridSize = parseInt(e.target.value)
-  a11yOptions.gridSize = gridSize
-  store('a11y-options', a11yOptions)
-  toggleGrid(gridSize)
-})
 
-$('select[name="theme"]')?.addEventListener('change', (e) => {
-
-  const theme = parseInt(e.target.value)
-  a11yOptions.theme = theme
-  store('a11y-options', a11yOptions)
-  toggleTheme(theme)
-
-})
-
-// TODO clean up creatBoard, use initBoard as default value for gameBoard
+// TODO clean up createBoard, use initBoard as default value for gameBoard
 const createBoard = (options) => {
   $('select[name=size]').value = options.size
   switch (options.size) {
@@ -107,11 +165,11 @@ const createBoard = (options) => {
 
   gameBoard = initBoard(options)
   store('board', gameBoard)
-  target = gameBoard.filter(c => c.state).length
-  correct = 0
-  wrong = 0
-  $('.stats .toFind').innerText = target
-  $('.stats .errorCounter').innerText = wrong
+  const stats = calcStats(gameBoard)
+  goal = stats.goal
+  wrong = stats.wrong
+  correct = stats.correct
+  updateStats({badGuesses: wrong, correctGuesses: correct, goal: goal})
 }
 
 const initBoard = (options) => {
@@ -190,7 +248,7 @@ const updateCheckedCells = (board) => {
   })
 }
 
-const toggleGrid = (gridSize) => {
+const swapGrid = (gridSize) => {
   let add = ''
   switch (gridSize) {
     case 2:
@@ -208,7 +266,7 @@ const toggleGrid = (gridSize) => {
   $('table.board')?.classList.add(add)
 }
 
-const toggleTheme = (theme) => {
+const swapTheme = (theme) => {
 
   let className = 'theme-'
   switch (theme) {
@@ -270,7 +328,20 @@ const resolveRowCol = (index, board, options) => {
   return board
 }
 
-const updateStats = ({badGuesses = 0, correctGuesses = 0}) => {
-  badGuesses && ($('.stats .errorCounter').innerText = badGuesses)
-  correctGuesses && ($('.stats .correctCounter').innerText = correctGuesses)
+
+
+// Convenience stuff
+
+const enableContinuousClicking = ()=>{
+  continuousClickingActive = true;
+  $('table.board').classList.add('highlight-marker')
+}
+const disableContinuousClicking = ()=>{
+  continuousClickingActive = false;
+  $('table.board').classList.remove('highlight-marker')
+}
+
+const toggleContinuousClicking = () => {
+  if (continuousClickingActive) disableContinuousClicking()
+  else enableContinuousClicking()
 }
